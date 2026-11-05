@@ -1,0 +1,43 @@
+<%- include('../parciais/topo') %>
+<h1><%= titulo %></h1>
+<%- include('../parciais/erros') %>
+<form method="post" action="<%= acao %>" class="cartao formulario">
+  <label>Nome do evento
+    <input name="nome" value="<%= evento.nome ?? '' %>" required>
+  </label>
+  <div class="campos-lado-a-lado">
+    <label>Data <span class="suave">(deixe vazio se ainda não houver)</span>
+      <input type="date" name="data" value="<%= evento.data ?? '' %>">
+    </label>
+    <label>Valor do ingresso <span class="suave">(opcional)</span>
+      <input name="valor_ingresso" inputmode="decimal" placeholder="60,00" value="<%= evento.valor_ingresso ?? '' %>">
+    </label>
+  </div>
+  <label>Local
+    <input name="local" value="<%= evento.local ?? '' %>">
+  </label>
+  <div class="campos-lado-a-lado">
+    <label>Tipo
+      <select name="tipo">
+        <% for (const [chave, nome] of Object.entries(opcoes.TIPOS_EVENTO)) { %>
+          <option value="<%= chave %>" <%= evento.tipo === chave ? 'selected' : '' %>><%= nome %></option>
+        <% } %>
+      </select>
+    </label>
+    <label>Status
+      <select name="status">
+        <% for (const [chave, nome] of Object.entries(opcoes.STATUS_EVENTO)) { %>
+          <option value="<%= chave %>" <%= evento.status === chave ? 'selected' : '' %>><%= nome %></option>
+        <% } %>
+      </select>
+    </label>
+  </div>
+  <label>Observações
+    <textarea name="observacoes" rows="3"><%= evento.observacoes ?? '' %></textarea>
+  </label>
+  <div class="acoes">
+    <button class="botao">Salvar</button>
+    <a class="botao botao-claro" href="<%= evento.id ? '/eventos/' + evento.id : '/eventos' %>">Cancelar</a>
+  </div>
+</form>
+<%- include('../parciais/rodape') %>

@@ -1,0 +1,37 @@
+<%- include('parciais/topo') %>
+<h1>Conta e backup</h1>
+
+<section class="cartao">
+  <h2>Cópia de segurança</h2>
+  <p>Baixe uma cópia de todos os dados e guarde em outro lugar (pen drive, e-mail ou nuvem). Faça isso com frequência: se o computador ou o servidor falhar, é o que permite recuperar tudo.</p>
+  <p><a class="botao" href="/conta/backup">Baixar cópia de segurança</a></p>
+</section>
+
+<section class="cartao">
+  <h2>Planilhas</h2>
+  <div class="acoes">
+    <a class="botao botao-claro" href="/exportar/eventos.csv">Eventos</a>
+    <a class="botao botao-claro" href="/exportar/parceiros.csv">Parceiros</a>
+    <a class="botao botao-claro" href="/exportar/socios.csv">Sócios</a>
+    <a class="botao botao-claro" href="/exportar/mensalidades.csv">Mensalidades</a>
+    <a class="botao botao-claro" href="/exportar/doacoes.csv">Doações</a>
+  </div>
+</section>
+
+<section class="cartao">
+  <h2>Trocar senha</h2>
+  <% if (erro) { %><p class="aviso aviso-erro" role="alert"><%= erro %></p><% } %>
+  <form method="post" action="/conta/senha" class="formulario">
+    <label>Senha atual
+      <input type="password" name="atual" required autocomplete="current-password">
+    </label>
+    <label>Nova senha (mínimo de <%= tamanho %> caracteres)
+      <input type="password" name="senha" required minlength="<%= tamanho %>" autocomplete="new-password">
+    </label>
+    <label>Repita a nova senha
+      <input type="password" name="confirmacao" required minlength="<%= tamanho %>" autocomplete="new-password">
+    </label>
+    <button class="botao">Salvar nova senha</button>
+  </form>
+</section>
+<%- include('parciais/rodape') %>

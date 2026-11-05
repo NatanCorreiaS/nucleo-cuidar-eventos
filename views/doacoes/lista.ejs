@@ -1,0 +1,47 @@
+<%- include('../parciais/topo') %>
+<div class="cabecalho-pagina">
+  <h1>Doações</h1>
+  <div class="acoes">
+    <a class="botao botao-claro" href="/exportar/doacoes.csv">Exportar planilha</a>
+    <a class="botao" href="/doacoes/nova">Nova doação</a>
+  </div>
+</div>
+
+<nav class="navegacao-mes" aria-label="Escolher mês">
+  <a class="botao botao-claro" href="/doacoes?mes=<%= anterior %>" aria-label="Mês anterior">←</a>
+  <strong><%= f.mesPorExtenso(mes) %></strong>
+  <a class="botao botao-claro" href="/doacoes?mes=<%= proximo %>" aria-label="Próximo mês">→</a>
+</nav>
+
+<div class="indicadores">
+  <div class="indicador indicador-destaque"><span>Em dinheiro no mês</span><strong><%= f.moeda(totalDinheiro) %></strong></div>
+  <div class="indicador"><span>Doações registradas</span><strong><%= doacoes.length %></strong></div>
+</div>
+
+<% if (!doacoes.length) { %>
+  <p class="vazio cartao">Nenhuma doação neste mês.</p>
+<% } else { %>
+  <table class="tabela">
+    <thead><tr><th>Data</th><th>Doador</th><th>Tipo</th><th>Descrição</th><th>Origem</th><th class="numero">Valor</th><th></th></tr></thead>
+    <tbody>
+      <% for (const doacao of doacoes) { %>
+        <tr>
+          <td data-rotulo="Data"><%= f.dataBR(doacao.data) %></td>
+          <td data-rotulo="Doador"><%= doacao.doador ?? 'Não identificado' %></td>
+          <td data-rotulo="Tipo"><%= opcoes.TIPOS_DOACAO[doacao.tipo] %></td>
+          <td data-rotulo="Descrição"><%= doacao.descricao ?? '—' %></td>
+          <td data-rotulo="Origem">
+            <% if (doacao.evento) { %>
+              <a href="/eventos/<%= doacao.evento_id %>"><%= doacao.evento %></a>
+            <% } else { %>
+              <%= opcoes.ORIGENS_DOACAO[doacao.origem] %>
+            <% } %>
+          </td>
+          <td data-rotulo="Valor" class="numero"><%= f.moeda(doacao.valor_centavos) %></td>
+          <td class="celula-acao"><a href="/doacoes/<%= doacao.id %>/editar">Editar</a></td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+<% } %>
+<%- include('../parciais/rodape') %>

@@ -1,0 +1,18 @@
+<%- include('parciais/topo') %>
+<div class="cartao cartao-acesso">
+  <%- include('parciais/logo') %>
+  <p class="slogan">Quem ama cuida!</p>
+  <h1>Primeiro acesso</h1>
+  <p class="suave">Crie a senha que será usada para entrar no sistema.</p>
+  <% if (erro) { %><p class="aviso aviso-erro" role="alert"><%= erro %></p><% } %>
+  <form method="post" action="/primeiro-acesso" class="formulario">
+    <label>Nova senha (mínimo de <%= tamanho %> caracteres)
+      <input type="password" name="senha" required minlength="<%= tamanho %>" autofocus autocomplete="new-password">
+    </label>
+    <label>Repita a senha
+      <input type="password" name="confirmacao" required minlength="<%= tamanho %>" autocomplete="new-password">
+    </label>
+    <button class="botao">Criar senha e entrar</button>
+  </form>
+</div>
+<%- include('parciais/rodape') %>

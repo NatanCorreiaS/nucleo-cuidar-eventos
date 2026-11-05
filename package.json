@@ -1,0 +1,23 @@
+{
+  "name": "nucleo-cuidar",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sistema de gestão de eventos e captação de recursos do Núcleo Cuidar (Itabuna-BA).",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/servidor.js",
+    "dev": "node --watch src/servidor.js",
+    "seed": "node scripts/seed.js",
+    "redefinir-senha": "node scripts/redefinir-senha.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "cookie-session": "^2.1.1",
+    "ejs": "^7.0.2",
+    "express": "^5.3.0"
+  }
+}

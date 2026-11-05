@@ -1,0 +1,79 @@
+<%- include('../parciais/topo') %>
+<p class="migalha"><a href="/socios">Sócios</a></p>
+<div class="cabecalho-pagina">
+  <div>
+    <h1><%= socio.nome %></h1>
+    <p class="suave">
+      <%= f.moeda(socio.valor_mensal_centavos) %> por mês · <%= opcoes.FORMAS_SOCIO[socio.forma] %><%= socio.cobrador ? ' (' + socio.cobrador + ')' : '' %> · Desde <%= f.mesCurto(socio.inicio) %>
+    </p>
+    <% if (!socio.ativo) { %><span class="selo selo-cancelado">Inativo</span><% } %>
+  </div>
+  <div class="acoes">
+    <a class="botao botao-claro" href="/socios/<%= socio.id %>/editar">Editar</a>
+    <form method="post" action="/socios/<%= socio.id %>/excluir" onsubmit="return confirm('Excluir este sócio e todo o histórico de pagamentos? Para apenas parar de cobrar, edite e desmarque Sócio ativo.')">
+      <button class="botao botao-perigo">Excluir</button>
+    </form>
+  </div>
+</div>
+
+<div class="colunas">
+  <section class="cartao">
+    <h2>Contato</h2>
+    <dl class="dados">
+      <dt>Telefone</dt><dd><%= socio.telefone ?? '—' %></dd>
+      <dt>Endereço</dt><dd><%= socio.endereco ?? '—' %></dd>
+      <% if (socio.observacoes) { %><dt>Observações</dt><dd><%= socio.observacoes %></dd><% } %>
+    </dl>
+  </section>
+  <section class="cartao">
+    <h2>Meses em atraso (<%= socio.meses_atraso.length %>)</h2>
+    <% if (!socio.meses_atraso.length) { %>
+      <p class="vazio">Nenhum mês em atraso.</p>
+    <% } else { %>
+      <div class="etiquetas">
+        <% for (const mes of socio.meses_atraso) { %><span class="selo selo-atraso"><%= f.mesCurto(mes) %></span><% } %>
+      </div>
+    <% } %>
+  </section>
+</div>
+
+<section class="cartao">
+  <h2>Pagamentos</h2>
+  <form method="post" action="/socios/<%= socio.id %>/pagamentos" class="formulario-linha">
+    <input type="hidden" name="voltar" value="<%= voltar %>">
+    <label>Mês de referência
+      <input type="month" name="competencia" value="<%= mesPadrao %>" required>
+    </label>
+    <label>Valor
+      <input name="valor" inputmode="decimal" value="<%= f.valorSimples(socio.valor_mensal_centavos) %>" required>
+    </label>
+    <label>Data do pagamento
+      <input type="date" name="data_pagamento" value="<%= hoje %>" required>
+    </label>
+    <button class="botao">Registrar pagamento</button>
+  </form>
+
+  <% if (!pagamentos.length) { %>
+    <p class="vazio">Nenhum pagamento registrado.</p>
+  <% } else { %>
+    <table class="tabela">
+      <thead><tr><th>Mês de referência</th><th>Pago em</th><th class="numero">Valor</th><th></th></tr></thead>
+      <tbody>
+        <% for (const pagamento of pagamentos) { %>
+          <tr>
+            <td data-rotulo="Mês"><%= f.mesCurto(pagamento.competencia) %></td>
+            <td data-rotulo="Pago em"><%= f.dataBR(pagamento.data_pagamento) %></td>
+            <td data-rotulo="Valor" class="numero"><%= f.moeda(pagamento.valor_centavos) %></td>
+            <td class="celula-acao">
+              <form method="post" action="/socios/<%= socio.id %>/pagamentos/<%= pagamento.id %>/excluir" onsubmit="return confirm('Desfazer este pagamento?')">
+                <input type="hidden" name="voltar" value="<%= voltar %>">
+                <button class="botao-link botao-link-perigo">Desfazer</button>
+              </form>
+            </td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  <% } %>
+</section>
+<%- include('../parciais/rodape') %>

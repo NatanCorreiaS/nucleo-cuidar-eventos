@@ -1,0 +1,7 @@
+<% if (erros.length) { %>
+  <div class="aviso aviso-erro" role="alert">
+    <ul>
+      <% for (const erro of erros) { %><li><%= erro %></li><% } %>
+    </ul>
+  </div>
+<% } %>

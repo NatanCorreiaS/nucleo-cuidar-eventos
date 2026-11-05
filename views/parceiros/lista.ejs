@@ -1,0 +1,27 @@
+<%- include('../parciais/topo') %>
+<div class="cabecalho-pagina">
+  <h1>Parceiros e patrocinadores</h1>
+  <div class="acoes">
+    <a class="botao botao-claro" href="/exportar/parceiros.csv">Exportar planilha</a>
+    <a class="botao" href="/parceiros/novo">Novo parceiro</a>
+  </div>
+</div>
+
+<% if (!parceiros.length) { %>
+  <p class="vazio cartao">Nenhum parceiro cadastrado.</p>
+<% } else { %>
+  <table class="tabela">
+    <thead><tr><th>Nome</th><th>Categoria</th><th>Telefone</th><th class="numero">Apoios</th></tr></thead>
+    <tbody>
+      <% for (const parceiro of parceiros) { %>
+        <tr>
+          <td data-rotulo="Nome"><a href="/parceiros/<%= parceiro.id %>/editar"><%= parceiro.nome %></a></td>
+          <td data-rotulo="Categoria"><%= opcoes.CATEGORIAS_PARCEIRO[parceiro.categoria] %></td>
+          <td data-rotulo="Telefone"><%= parceiro.telefone ?? '—' %></td>
+          <td data-rotulo="Apoios" class="numero"><%= parceiro.total_apoios %></td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+<% } %>
+<%- include('../parciais/rodape') %>

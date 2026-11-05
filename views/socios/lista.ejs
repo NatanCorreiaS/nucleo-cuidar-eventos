@@ -1,0 +1,47 @@
+<%- include('../parciais/topo') %>
+<div class="cabecalho-pagina">
+  <h1>Sócios sustentadores</h1>
+  <div class="acoes">
+    <a class="botao botao-claro" href="/exportar/socios.csv">Exportar planilha</a>
+    <a class="botao" href="/socios/novo">Novo sócio</a>
+  </div>
+</div>
+
+<div class="indicadores">
+  <div class="indicador"><span>Sócios ativos</span><strong><%= totalAtivos %></strong></div>
+  <div class="indicador"><span>Em atraso</span><strong><%= totalAtraso %></strong></div>
+  <div class="indicador"><span>Previsto por mês</span><strong><%= f.moeda(esperadoMensal) %></strong></div>
+</div>
+
+<nav class="filtros" aria-label="Filtrar sócios">
+  <a href="/socios" <% if (filtro === 'todos') { %>aria-current="true"<% } %>>Todos</a>
+  <a href="/socios?filtro=atraso" <% if (filtro === 'atraso') { %>aria-current="true"<% } %>>Em atraso</a>
+</nav>
+
+<% if (!socios.length) { %>
+  <p class="vazio cartao">Nenhum sócio encontrado.</p>
+<% } else { %>
+  <table class="tabela">
+    <thead><tr><th>Nome</th><th>Forma</th><th>Cobrador</th><th class="numero">Valor mensal</th><th>Situação</th></tr></thead>
+    <tbody>
+      <% for (const socio of socios) { %>
+        <tr>
+          <td data-rotulo="Nome"><a href="/socios/<%= socio.id %>"><%= socio.nome %></a></td>
+          <td data-rotulo="Forma"><%= opcoes.FORMAS_SOCIO[socio.forma] %></td>
+          <td data-rotulo="Cobrador"><%= socio.cobrador ?? '—' %></td>
+          <td data-rotulo="Valor mensal" class="numero"><%= f.moeda(socio.valor_mensal_centavos) %></td>
+          <td data-rotulo="Situação">
+            <% if (!socio.ativo) { %>
+              <span class="selo selo-cancelado">Inativo</span>
+            <% } else if (socio.meses_atraso.length) { %>
+              <span class="selo selo-atraso"><%= socio.meses_atraso.length %> <%= socio.meses_atraso.length === 1 ? 'mês' : 'meses' %> em atraso</span>
+            <% } else { %>
+              <span class="selo selo-realizado">Em dia</span>
+            <% } %>
+          </td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+<% } %>
+<%- include('../parciais/rodape') %>

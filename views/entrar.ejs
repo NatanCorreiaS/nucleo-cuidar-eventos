@@ -1,0 +1,15 @@
+<%- include('parciais/topo') %>
+<div class="cartao cartao-acesso">
+  <%- include('parciais/logo') %>
+  <p class="slogan">Quem ama cuida!</p>
+  <h1>Entrar no sistema</h1>
+  <p class="suave">Gestão de eventos e captação de recursos</p>
+  <% if (erro) { %><p class="aviso aviso-erro" role="alert"><%= erro %></p><% } %>
+  <form method="post" action="/entrar" class="formulario">
+    <label>Senha
+      <input type="password" name="senha" required autofocus autocomplete="current-password">
+    </label>
+    <button class="botao">Entrar</button>
+  </form>
+</div>
+<%- include('parciais/rodape') %>

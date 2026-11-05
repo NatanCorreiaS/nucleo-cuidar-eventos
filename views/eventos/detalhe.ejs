@@ -1,0 +1,153 @@
+<%- include('../parciais/topo') %>
+<p class="migalha"><a href="/eventos">Eventos</a></p>
+<div class="cabecalho-pagina">
+  <div>
+    <h1><%= evento.nome %></h1>
+    <p class="suave">
+      <%= f.dataBR(evento.data) %><%= evento.local ? ' · ' + evento.local : '' %> · <%= opcoes.TIPOS_EVENTO[evento.tipo] %>
+      <% if (evento.valor_ingresso_centavos) { %> · Ingresso <%= f.moeda(evento.valor_ingresso_centavos) %><% } %>
+    </p>
+    <span class="selo selo-<%= evento.status %>"><%= opcoes.STATUS_EVENTO[evento.status] %></span>
+  </div>
+  <div class="acoes">
+    <a class="botao botao-claro" href="/eventos/<%= evento.id %>/editar">Editar</a>
+    <form method="post" action="/eventos/<%= evento.id %>/excluir" onsubmit="return confirm('Excluir este evento e todos os seus lançamentos?')">
+      <button class="botao botao-perigo">Excluir</button>
+    </form>
+  </div>
+</div>
+
+<% if (evento.observacoes) { %><p class="cartao observacoes"><%= evento.observacoes %></p><% } %>
+
+<div class="indicadores">
+  <div class="indicador"><span>Receitas</span><strong><%= f.moeda(evento.receitas) %></strong></div>
+  <div class="indicador"><span>Doações em dinheiro</span><strong><%= f.moeda(evento.doacoes_dinheiro) %></strong></div>
+  <div class="indicador"><span>Despesas</span><strong><%= f.moeda(evento.despesas) %></strong></div>
+  <div class="indicador indicador-destaque"><span>Resultado</span><strong><%= f.moeda(evento.resultado) %></strong></div>
+</div>
+
+<%# Evento futuro: o dinheiro entra hoje, como na venda antecipada de ingressos. %>
+<% const dataPadrao = evento.data && evento.data < hoje ? evento.data : hoje; %>
+<section class="cartao" id="financeiro">
+  <h2>Financeiro</h2>
+  <% if (evento.valor_ingresso_centavos) { %>
+    <form method="post" action="/eventos/<%= evento.id %>/ingressos" class="formulario-linha">
+      <label>Ingressos vendidos a <%= f.moeda(evento.valor_ingresso_centavos) %>
+        <input type="number" name="quantidade" min="1" step="1" required>
+      </label>
+      <label>Data
+        <input type="date" name="data" value="<%= dataPadrao %>" required>
+      </label>
+      <button class="botao botao-claro">Lançar ingressos</button>
+    </form>
+  <% } %>
+  <form method="post" action="/eventos/<%= evento.id %>/lancamentos" class="formulario-linha">
+    <label>Tipo
+      <select name="tipo">
+        <option value="receita">Receita</option>
+        <option value="despesa">Despesa</option>
+      </select>
+    </label>
+    <label class="campo-largo">Descrição
+      <input name="descricao" placeholder="Ex.: aluguel do som" required>
+    </label>
+    <label>Valor
+      <input name="valor" inputmode="decimal" placeholder="0,00" required>
+    </label>
+    <label>Data
+      <input type="date" name="data" value="<%= dataPadrao %>" required>
+    </label>
+    <button class="botao">Lançar</button>
+  </form>
+
+  <% if (!lancamentos.length) { %>
+    <p class="vazio">Nenhum lançamento ainda.</p>
+  <% } else { %>
+    <table class="tabela">
+      <thead><tr><th>Data</th><th>Tipo</th><th>Descrição</th><th class="numero">Valor</th><th></th></tr></thead>
+      <tbody>
+        <% for (const item of lancamentos) { %>
+          <tr>
+            <td data-rotulo="Data"><%= f.dataBR(item.data) %></td>
+            <td data-rotulo="Tipo"><span class="selo selo-<%= item.tipo %>"><%= item.tipo === 'receita' ? 'Receita' : 'Despesa' %></span></td>
+            <td data-rotulo="Descrição"><%= item.descricao %></td>
+            <td data-rotulo="Valor" class="numero"><%= f.moeda(item.valor_centavos) %></td>
+            <td class="celula-acao">
+              <form method="post" action="/eventos/<%= evento.id %>/lancamentos/<%= item.id %>/excluir" onsubmit="return confirm('Excluir este lançamento?')">
+                <button class="botao-link botao-link-perigo">Excluir</button>
+              </form>
+            </td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  <% } %>
+</section>
+
+<section class="cartao" id="apoios">
+  <h2>Parceiros e patrocinadores</h2>
+  <% if (!parceiros.length) { %>
+    <p class="vazio">Cadastre um <a href="/parceiros/novo">parceiro</a> para registrar apoios neste evento.</p>
+  <% } else { %>
+    <form method="post" action="/eventos/<%= evento.id %>/apoios" class="formulario-linha">
+      <label>Parceiro
+        <select name="parceiro_id" required>
+          <option value="">Escolha...</option>
+          <% for (const parceiro of parceiros) { %>
+            <option value="<%= parceiro.id %>"><%= parceiro.nome %></option>
+          <% } %>
+        </select>
+      </label>
+      <label class="campo-largo">O que contribuiu
+        <input name="descricao" placeholder="Ex.: 10 kg de camarão, cessão do espaço" required>
+      </label>
+      <button class="botao">Registrar apoio</button>
+    </form>
+    <p class="dica">Os apoios não entram no resultado. Se o parceiro deu dinheiro, lance também como receita no Financeiro.</p>
+  <% } %>
+  <% if (apoios.length) { %>
+    <table class="tabela">
+      <thead><tr><th>Parceiro</th><th>Contribuição</th><th></th></tr></thead>
+      <tbody>
+        <% for (const apoio of apoios) { %>
+          <tr>
+            <td data-rotulo="Parceiro"><a href="/parceiros/<%= apoio.parceiro_id %>/editar"><%= apoio.parceiro %></a></td>
+            <td data-rotulo="Contribuição"><%= apoio.descricao %></td>
+            <td class="celula-acao">
+              <form method="post" action="/eventos/<%= evento.id %>/apoios/<%= apoio.id %>/excluir" onsubmit="return confirm('Remover este apoio?')">
+                <button class="botao-link botao-link-perigo">Remover</button>
+              </form>
+            </td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  <% } %>
+</section>
+
+<section class="cartao" id="doacoes">
+  <div class="cabecalho-secao">
+    <h2>Doações neste evento</h2>
+    <a href="/doacoes/nova?evento=<%= evento.id %>">Registrar doação</a>
+  </div>
+  <% if (!doacoes.length) { %>
+    <p class="vazio">Nenhuma doação vinculada.</p>
+  <% } else { %>
+    <table class="tabela">
+      <thead><tr><th>Data</th><th>Doador</th><th>Tipo</th><th>Descrição</th><th class="numero">Valor</th><th></th></tr></thead>
+      <tbody>
+        <% for (const doacao of doacoes) { %>
+          <tr>
+            <td data-rotulo="Data"><%= f.dataBR(doacao.data) %></td>
+            <td data-rotulo="Doador"><%= doacao.doador ?? 'Não identificado' %></td>
+            <td data-rotulo="Tipo"><%= opcoes.TIPOS_DOACAO[doacao.tipo] %></td>
+            <td data-rotulo="Descrição"><%= doacao.descricao ?? '—' %></td>
+            <td data-rotulo="Valor" class="numero"><%= f.moeda(doacao.valor_centavos) %></td>
+            <td class="celula-acao"><a href="/doacoes/<%= doacao.id %>/editar">Editar</a></td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  <% } %>
+</section>
+<%- include('../parciais/rodape') %>

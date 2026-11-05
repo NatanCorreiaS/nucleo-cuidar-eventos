@@ -1,0 +1,56 @@
+<%- include('parciais/topo') %>
+<h1>Painel</h1>
+<p class="suave">Resumo de <%= f.mesPorExtenso(mes) %></p>
+
+<div class="indicadores">
+  <div class="indicador indicador-destaque">
+    <span>Arrecadado no mês</span>
+    <strong><%= f.moeda(arrecadado.total) %></strong>
+  </div>
+  <div class="indicador"><span>Sócios</span><strong><%= f.moeda(arrecadado.socios) %></strong></div>
+  <div class="indicador"><span>Eventos</span><strong><%= f.moeda(arrecadado.eventos) %></strong></div>
+  <div class="indicador"><span>Doações em dinheiro</span><strong><%= f.moeda(arrecadado.doacoes) %></strong></div>
+  <div class="indicador"><span>Despesas de eventos</span><strong><%= f.moeda(despesas) %></strong></div>
+</div>
+
+<div class="colunas">
+  <section class="cartao">
+    <div class="cabecalho-secao">
+      <h2>Próximos eventos</h2>
+      <a href="/eventos/novo">Novo evento</a>
+    </div>
+    <% if (!proximosEventos.length) { %>
+      <p class="vazio">Nenhum evento planejado.</p>
+    <% } else { %>
+      <ul class="lista-simples">
+        <% for (const evento of proximosEventos) { %>
+          <li>
+            <a href="/eventos/<%= evento.id %>"><%= evento.nome %></a>
+            <span class="suave"><%= f.dataBR(evento.data) %><%= evento.valor_ingresso_centavos ? ' · ' + f.moeda(evento.valor_ingresso_centavos) : '' %></span>
+          </li>
+        <% } %>
+      </ul>
+    <% } %>
+  </section>
+
+  <section class="cartao">
+    <div class="cabecalho-secao">
+      <h2>Sócios em atraso (<%= emAtraso.length %>)</h2>
+      <a href="/socios/mensalidades">Mensalidades</a>
+    </div>
+    <% if (!emAtraso.length) { %>
+      <p class="vazio">Nenhum sócio em atraso.</p>
+    <% } else { %>
+      <ul class="lista-simples">
+        <% for (const socio of emAtraso.slice(0, 8)) { %>
+          <li>
+            <a href="/socios/<%= socio.id %>"><%= socio.nome %></a>
+            <span class="selo selo-atraso"><%= socio.meses_atraso.length %> <%= socio.meses_atraso.length === 1 ? 'mês' : 'meses' %></span>
+          </li>
+        <% } %>
+      </ul>
+      <% if (emAtraso.length > 8) { %><p><a href="/socios?filtro=atraso">Ver todos</a></p><% } %>
+    <% } %>
+  </section>
+</div>
+<%- include('parciais/rodape') %>

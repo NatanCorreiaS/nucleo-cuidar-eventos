@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= titulo %> · Núcleo Cuidar</title>
+  <meta name="theme-color" content="#3c3c98">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/estilo.css">
+</head>
+<body class="<%= logado ? 'com-menu' : 'sem-menu' %>">
+<% if (logado) {
+  const itens = [
+    ['/', 'Painel'],
+    ['/eventos', 'Eventos'],
+    ['/parceiros', 'Parceiros'],
+    ['/socios', 'Sócios'],
+    ['/socios/mensalidades', 'Mensalidades'],
+    ['/doacoes', 'Doações'],
+    ['/conta', 'Conta e backup'],
+  ];
+  const ativo = itens
+    .filter(([rota]) => rota === '/' ? caminho === '/' : caminho === rota || caminho.startsWith(rota + '/'))
+    .sort((a, b) => b[0].length - a[0].length)[0]?.[0];
+%>
+<header class="menu">
+  <a class="marca" href="/">
+    <%- include('logo') %>
+    <span class="slogan">Quem ama cuida!</span>
+  </a>
+  <nav aria-label="Principal">
+    <% for (const [rota, nome] of itens) { %>
+      <a href="<%= rota %>" <% if (rota === ativo) { %>aria-current="page"<% } %>><%= nome %></a>
+    <% } %>
+  </nav>
+  <form method="post" action="/sair"><button class="botao-link">Sair</button></form>
+</header>
+<% } %>
+<main>
+  <% if (demo && logado) { %>
+    <p class="aviso aviso-demo">Dados de demonstração. Os eventos e valores de ingresso vêm da conversa com o núcleo; nomes de pessoas, dias e demais valores são fictícios.</p>
+  <% } %>
+  <% if (aviso) { %>
+    <p class="aviso aviso-<%= aviso.tipo %>" role="status"><%= aviso.texto %></p>
+  <% } %>

@@ -1,0 +1,50 @@
+<%- include('../parciais/topo') %>
+<p class="migalha"><a href="/parceiros">Parceiros</a></p>
+<h1><%= titulo %></h1>
+<%- include('../parciais/erros') %>
+<form method="post" action="<%= acao %>" class="cartao formulario">
+  <label>Nome
+    <input name="nome" value="<%= parceiro.nome ?? '' %>" required>
+  </label>
+  <div class="campos-lado-a-lado">
+    <label>Categoria
+      <select name="categoria">
+        <% for (const [chave, nome] of Object.entries(opcoes.CATEGORIAS_PARCEIRO)) { %>
+          <option value="<%= chave %>" <%= parceiro.categoria === chave ? 'selected' : '' %>><%= nome %></option>
+        <% } %>
+      </select>
+    </label>
+    <label>Telefone
+      <input type="tel" name="telefone" value="<%= parceiro.telefone ?? '' %>">
+    </label>
+  </div>
+  <label>Observações
+    <textarea name="observacoes" rows="3"><%= parceiro.observacoes ?? '' %></textarea>
+  </label>
+  <div class="acoes">
+    <button class="botao">Salvar</button>
+    <a class="botao botao-claro" href="/parceiros">Cancelar</a>
+  </div>
+</form>
+
+<% if (parceiro.id) { %>
+  <section class="cartao">
+    <h2>Apoios em eventos</h2>
+    <% if (!apoios.length) { %>
+      <p class="vazio">Nenhum apoio registrado.</p>
+    <% } else { %>
+      <ul class="lista-simples">
+        <% for (const apoio of apoios) { %>
+          <li>
+            <a href="/eventos/<%= apoio.evento_id %>"><%= apoio.evento %></a>
+            <span class="suave"><%= apoio.descricao %></span>
+          </li>
+        <% } %>
+      </ul>
+    <% } %>
+  </section>
+  <form method="post" action="/parceiros/<%= parceiro.id %>/excluir" onsubmit="return confirm('Excluir este parceiro e os apoios registrados?')">
+    <button class="botao botao-perigo">Excluir parceiro</button>
+  </form>
+<% } %>
+<%- include('../parciais/rodape') %>

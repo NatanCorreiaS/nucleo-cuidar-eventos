@@ -1,0 +1,68 @@
+<%- include('../parciais/topo') %>
+<div class="cabecalho-pagina">
+  <h1>Mensalidades</h1>
+  <a class="botao botao-claro" href="/exportar/mensalidades.csv">Exportar planilha</a>
+</div>
+
+<% const sufixo = cobrador ? '&cobrador=' + encodeURIComponent(cobrador) : ''; %>
+<nav class="navegacao-mes" aria-label="Escolher mês">
+  <a class="botao botao-claro" href="/socios/mensalidades?mes=<%= anterior %><%= sufixo %>" aria-label="Mês anterior">←</a>
+  <strong><%= f.mesPorExtenso(mes) %></strong>
+  <a class="botao botao-claro" href="/socios/mensalidades?mes=<%= proximo %><%= sufixo %>" aria-label="Próximo mês">→</a>
+</nav>
+
+<div class="indicadores">
+  <div class="indicador"><span>Previsto</span><strong><%= f.moeda(esperado) %></strong></div>
+  <div class="indicador indicador-destaque"><span>Recebido</span><strong><%= f.moeda(recebido) %></strong></div>
+  <div class="indicador"><span>Faltam pagar</span><strong><%= pendentes %></strong></div>
+</div>
+
+<% if (cobradores.length) { %>
+  <nav class="filtros" aria-label="Filtrar por cobrador">
+    <a href="/socios/mensalidades?mes=<%= mes %>" <% if (!cobrador) { %>aria-current="true"<% } %>>Todos</a>
+    <% for (const nome of cobradores) { %>
+      <a href="/socios/mensalidades?mes=<%= mes %>&cobrador=<%= encodeURIComponent(nome) %>" <% if (cobrador === nome) { %>aria-current="true"<% } %>><%= nome %></a>
+    <% } %>
+  </nav>
+<% } %>
+
+<% if (!socios.length) { %>
+  <p class="vazio cartao">Nenhum sócio ativo neste mês.</p>
+<% } else { %>
+  <table class="tabela">
+    <thead><tr><th>Sócio</th><th>Forma</th><th class="numero">Valor</th><th>Situação</th><th></th></tr></thead>
+    <tbody>
+      <% for (const socio of socios) { %>
+        <tr>
+          <td data-rotulo="Sócio"><a href="/socios/<%= socio.id %>"><%= socio.nome %></a></td>
+          <td data-rotulo="Forma"><%= opcoes.FORMAS_SOCIO[socio.forma] %><%= socio.cobrador ? ' (' + socio.cobrador + ')' : '' %></td>
+          <td data-rotulo="Valor" class="numero"><%= f.moeda(socio.pagamento?.valor_centavos ?? socio.valor_mensal_centavos) %></td>
+          <td data-rotulo="Situação">
+            <% if (socio.pagamento) { %>
+              <span class="selo selo-realizado">Pago em <%= f.dataBR(socio.pagamento.data_pagamento) %></span>
+            <% } else if (mes < corrente) { %>
+              <span class="selo selo-atraso">Em atraso</span>
+            <% } else { %>
+              <span class="selo selo-planejado">Pendente</span>
+            <% } %>
+          </td>
+          <td class="celula-acao">
+            <% if (socio.pagamento) { %>
+              <form method="post" action="/socios/<%= socio.id %>/pagamentos/<%= socio.pagamento.id %>/excluir" onsubmit="return confirm('Desfazer este pagamento?')">
+                <input type="hidden" name="voltar" value="<%= voltar %>">
+                <button class="botao-link botao-link-perigo">Desfazer</button>
+              </form>
+            <% } else { %>
+              <form method="post" action="/socios/<%= socio.id %>/pagamentos">
+                <input type="hidden" name="competencia" value="<%= mes %>">
+                <input type="hidden" name="voltar" value="<%= voltar %>">
+                <button class="botao botao-pequeno">Marcar pago</button>
+              </form>
+            <% } %>
+          </td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+<% } %>
+<%- include('../parciais/rodape') %>

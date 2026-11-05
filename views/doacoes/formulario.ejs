@@ -1,0 +1,56 @@
+<%- include('../parciais/topo') %>
+<p class="migalha"><a href="/doacoes">Doações</a></p>
+<h1><%= titulo %></h1>
+<%- include('../parciais/erros') %>
+<form method="post" action="<%= acao %>" class="cartao formulario">
+  <div class="campos-lado-a-lado">
+    <label>Data
+      <input type="date" name="data" value="<%= doacao.data ?? '' %>" required>
+    </label>
+    <label>Doador <span class="suave">(opcional)</span>
+      <input name="doador" value="<%= doacao.doador ?? '' %>">
+    </label>
+  </div>
+  <div class="campos-lado-a-lado">
+    <label>Tipo
+      <select name="tipo">
+        <% for (const [chave, nome] of Object.entries(opcoes.TIPOS_DOACAO)) { %>
+          <option value="<%= chave %>" <%= doacao.tipo === chave ? 'selected' : '' %>><%= nome %></option>
+        <% } %>
+      </select>
+    </label>
+    <label>Valor <span class="suave">(só para dinheiro)</span>
+      <input name="valor" inputmode="decimal" placeholder="50,00" value="<%= doacao.valor ?? '' %>">
+    </label>
+  </div>
+  <label>Descrição <span class="suave">(obrigatória para alimentos e itens)</span>
+    <input name="descricao" placeholder="Ex.: 20 kg de arroz" value="<%= doacao.descricao ?? '' %>">
+  </label>
+  <div class="campos-lado-a-lado">
+    <label>Origem
+      <select name="origem">
+        <% for (const [chave, nome] of Object.entries(opcoes.ORIGENS_DOACAO)) { %>
+          <option value="<%= chave %>" <%= doacao.origem === chave ? 'selected' : '' %>><%= nome %></option>
+        <% } %>
+      </select>
+    </label>
+    <label>Evento <span class="suave">(só se a origem for Evento)</span>
+      <select name="evento_id">
+        <option value="">Nenhum</option>
+        <% for (const evento of eventos) { %>
+          <option value="<%= evento.id %>" <%= String(doacao.evento_id) === String(evento.id) ? 'selected' : '' %>><%= evento.nome %> (<%= f.dataBR(evento.data) %>)</option>
+        <% } %>
+      </select>
+    </label>
+  </div>
+  <div class="acoes">
+    <button class="botao">Salvar</button>
+    <a class="botao botao-claro" href="/doacoes">Cancelar</a>
+  </div>
+</form>
+<% if (doacao.id) { %>
+  <form method="post" action="/doacoes/<%= doacao.id %>/excluir" onsubmit="return confirm('Excluir esta doação?')">
+    <button class="botao botao-perigo">Excluir doação</button>
+  </form>
+<% } %>
+<%- include('../parciais/rodape') %>

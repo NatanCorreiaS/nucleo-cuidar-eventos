@@ -1,0 +1,38 @@
+<%- include('../parciais/topo') %>
+<div class="cabecalho-pagina">
+  <h1>Eventos</h1>
+  <div class="acoes">
+    <a class="botao botao-claro" href="/exportar/eventos.csv">Exportar planilha</a>
+    <a class="botao" href="/eventos/novo">Novo evento</a>
+  </div>
+</div>
+
+<nav class="filtros" aria-label="Filtrar por status">
+  <a href="/eventos" <% if (!status) { %>aria-current="true"<% } %>>Todos</a>
+  <% for (const [chave, nome] of Object.entries(opcoes.STATUS_EVENTO)) { %>
+    <a href="/eventos?status=<%= chave %>" <% if (status === chave) { %>aria-current="true"<% } %>><%= nome %></a>
+  <% } %>
+</nav>
+
+<% if (!eventos.length) { %>
+  <p class="vazio cartao">Nenhum evento encontrado.</p>
+<% } else { %>
+  <table class="tabela">
+    <thead>
+      <tr><th>Evento</th><th>Data</th><th>Tipo</th><th>Status</th><th class="numero">Ingresso</th><th class="numero">Resultado</th></tr>
+    </thead>
+    <tbody>
+      <% for (const evento of eventos) { %>
+        <tr>
+          <td data-rotulo="Evento"><a href="/eventos/<%= evento.id %>"><%= evento.nome %></a></td>
+          <td data-rotulo="Data"><%= f.dataBR(evento.data) %></td>
+          <td data-rotulo="Tipo"><%= opcoes.TIPOS_EVENTO[evento.tipo] %></td>
+          <td data-rotulo="Status"><span class="selo selo-<%= evento.status %>"><%= opcoes.STATUS_EVENTO[evento.status] %></span></td>
+          <td data-rotulo="Ingresso" class="numero"><%= f.moeda(evento.valor_ingresso_centavos) %></td>
+          <td data-rotulo="Resultado" class="numero <%= evento.resultado < 0 ? 'negativo' : '' %>"><%= f.moeda(evento.resultado) %></td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+<% } %>
+<%- include('../parciais/rodape') %>

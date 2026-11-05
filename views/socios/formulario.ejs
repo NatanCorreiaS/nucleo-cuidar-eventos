@@ -1,0 +1,49 @@
+<%- include('../parciais/topo') %>
+<p class="migalha"><a href="/socios">Sócios</a></p>
+<h1><%= titulo %></h1>
+<%- include('../parciais/erros') %>
+<form method="post" action="<%= acao %>" class="cartao formulario">
+  <label>Nome
+    <input name="nome" value="<%= socio.nome ?? '' %>" required>
+  </label>
+  <div class="campos-lado-a-lado">
+    <label>Telefone
+      <input type="tel" name="telefone" value="<%= socio.telefone ?? '' %>">
+    </label>
+    <label>Valor mensal
+      <input name="valor_mensal" inputmode="decimal" placeholder="20,00" value="<%= socio.valor_mensal ?? '' %>" required>
+    </label>
+  </div>
+  <label>Endereço <span class="suave">(para a visita do cobrador)</span>
+    <input name="endereco" value="<%= socio.endereco ?? '' %>">
+  </label>
+  <div class="campos-lado-a-lado">
+    <label>Forma de contribuição
+      <select name="forma">
+        <% for (const [chave, nome] of Object.entries(opcoes.FORMAS_SOCIO)) { %>
+          <option value="<%= chave %>" <%= socio.forma === chave ? 'selected' : '' %>><%= nome %></option>
+        <% } %>
+      </select>
+    </label>
+    <label>Cobrador <span class="suave">(só se a forma for Cobrador)</span>
+      <input name="cobrador" list="cobradores" value="<%= socio.cobrador ?? '' %>">
+      <datalist id="cobradores">
+        <% for (const cobrador of cobradores) { %><option value="<%= cobrador %>"></option><% } %>
+      </datalist>
+    </label>
+  </div>
+  <label>Contribui desde (mês)
+    <input type="month" name="inicio" value="<%= socio.inicio ?? '' %>" required>
+  </label>
+  <label>Observações
+    <textarea name="observacoes" rows="3"><%= socio.observacoes ?? '' %></textarea>
+  </label>
+  <label class="caixa">
+    <input type="checkbox" name="ativo" value="1" <%= socio.ativo ? 'checked' : '' %>> Sócio ativo
+  </label>
+  <div class="acoes">
+    <button class="botao">Salvar</button>
+    <a class="botao botao-claro" href="<%= socio.id ? '/socios/' + socio.id : '/socios' %>">Cancelar</a>
+  </div>
+</form>
+<%- include('../parciais/rodape') %>
