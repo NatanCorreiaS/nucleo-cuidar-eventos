@@ -64,7 +64,7 @@ no README. A senha fica em `senha-teste.txt`, fora do Git: não a repita em resp
 **Nunca testado.** Abrir pelo celular de verdade, abrir o CSV no Excel real e entrar com a senha certa pelo
 endereço público.
 
-**Pendente com o usuário.** Instalar o Git e salvar a primeira versão, o que também evitaria nova perda.
+**Git.** Repositório iniciado em 2026-11-05 (branch `main`, primeiro commit `f55b2e0`). O `.gitignore` exclui `node_modules/`, `dados/`, `.env*`, `*.log` e `senha-teste.txt`. Ainda sem remoto.
 
 **Sem resposta do núcleo.** Número de sócios e cobradores, se o cobrador usaria o sistema na rua, quem vai
 usar e em qual aparelho, como é o controle hoje, para quem prestam contas, se as fantasias são alugadas ou
